@@ -2,7 +2,7 @@
     "activeDuty": [
       {
         "id": "6",
-        "path": "/data/images/6",
+        "path": "/members/6.jpg",
         "name": "ガチ恋",
         "title": "站长",
         "contact": "QQ：1131997238",
@@ -20,37 +20,37 @@
     "historicalDuty": [
       {
         "id": "1",
-        "path": "/data/images/1",
+        "path": "/members/1.jpg",
         "name": "渣渣",
         "title": "一代目"
       },
       {
         "id": "3",
-        "path": "/data/images/3",
+        "path": "/members/3.jpg",
         "name": "梓泠",
         "title": "二代目"
       },
       {
         "id": "4",
-        "path": "/data/images/4",
+        "path": "/members/4.jpg",
         "name": "书名号",
         "title": "三代目"
       },
       {
         "id": "5",
-        "path": "/data/images/5",
+        "path": "/members/5.jpg",
         "name": "掌控-物质",
         "title": "四代目"
       },
       {
         "id": "6",
-        "path": "/data/images/6",
+        "path": "/members/6.jpg",
         "name": "ガチ恋",
         "title": "五代目"
       },
       {
         "id": "7",
-        "path": "/data/images/7",
+        "path": "/members/7.jpg",
         "name": "高冷",
         "title": "六代目"
       }
@@ -58,19 +58,19 @@
     "founder": [
       {
         "id": "0",
-        "path": "/data/images/0",
+        "path": "/members/0.jpg",
         "name": "乌鸦",
         "title": "创始人"
       },
       {
         "id": "1",
-        "path": "/data/images/1",
+        "path": "/members/1.jpg",
         "name": "渣渣",
         "title": "创始人"
       },
       {
         "id": "2",
-        "path": "/data/images/2",
+        "path": "/members/2.jpg",
         "name": "令君",
         "title": "创始人"
       }
@@ -78,43 +78,43 @@
     "otherMembers": [
       {
         "id": "0",
-        "path": "/data/images/0",
+        "path": "/members/0.jpg",
         "name": "乌鸦",
         "title": "组员"
       },
       {
         "id": "1",
-        "path": "/data/images/1",
+        "path": "/members/1.jpg",
         "name": "渣渣",
         "title": "组员"
       },
       {
         "id": "2",
-        "path": "/data/images/2",
+        "path": "/members/2.jpg",
         "name": "令君",
         "title": "组员"
       },
       {
         "id": "3",
-        "path": "/data/images/3",
+        "path": "/members/3.jpg",
         "name": "梓泠",
         "title": "组员"
       },
       {
         "id": "4",
-        "path": "/data/images/4",
+        "path": "/members/4.jpg",
         "name": "书名号",
         "title": "组员"
       },
       {
         "id": "5",
-        "path": "/data/images/5",
+        "path": "/members/5.jpg",
         "name": "掌控-物质",
         "title": "组员"
       },
       {
         "id": "6",
-        "path": "/data/images/6",
+        "path": "/members/6.jpg",
         "name": "ガチ恋",
         "title": "组员",
         "contact": "QQ：1131997238",
@@ -122,7 +122,7 @@
       },
       {
         "id": "7",
-        "path": "/data/images/7",
+        "path": "/members/7.jpg",
         "name": "高冷",
         "title": "组员",
         "contact": "QQ：3181259291",
