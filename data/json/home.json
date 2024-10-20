@@ -1,0 +1,73 @@
+{
+  "lastestVideos": [
+    {
+      "id": "0",
+      "title": "What are you doing!（魔性剪辑）",
+      "path": "/data/images/lastestVideos/0.jpg",
+      "link": "https://www.bilibili.com/video/BV12V4y1F7j9/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
+    },
+    {
+      "id": "1",
+      "title": "晒你2024拜年祭单品】来自新世界",
+      "path": "/data/images/lastestVideos/1.jpg",
+      "link": "https://www.bilibili.com/video/BV1zH4y1Y7Ht/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
+    },
+    {
+      "id": "2",
+      "title": "晒你2024拜年祭单品】思 考 过 载",
+      "path": "/data/images/lastestVideos/2.jpg",
+      "link": "https://www.bilibili.com/video/BV1jy421h7Nk/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
+    },
+    {
+      "id": "3",
+      "title": "【86/梅菲斯特】纵使硝烟分离两人",
+      "path": "/data/images/lastestVideos/3.jpg",
+      "link": "https://www.bilibili.com/video/BV1Vy421h7M6/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
+    }
+  ],
+  "lastestTypesettings": [
+    {
+      "id": "0",
+      "path":"/data/images/lastestTypesettings/0.png"
+    },
+    {
+      "id": "1",
+      "path": "/data/images/lastestTypesettings/1.png"
+    },
+    {
+      "id": "2",
+      "path": "/data/images/lastestTypesettings/2.png"
+    },
+    {
+      "id": "3",
+      "path": "/data/images/lastestTypesettings/3.png"
+    }
+  ],
+  "carouselImage": [
+    {
+      "id": "0",
+      "path": "/data/images/carouselImage/0.png",
+      "alt": "陈晓月"
+    },
+    {
+      "id": "1",
+      "path": "/data/images/carouselImage/1.png",
+      "alt": "集章册正面"
+    },
+    {
+      "id": "2",
+      "path": "/data/images/carouselImage/2.png",
+      "alt": "若似霜"
+    },
+    {
+      "id": "3",
+      "path": "/data/images/carouselImage/3.png",
+      "alt": "集章册反面"
+    },
+    {
+      "id": "4",
+      "path": "/data/images/carouselImage/4.png",
+      "alt": "表表表面"
+    }
+  ]
+}

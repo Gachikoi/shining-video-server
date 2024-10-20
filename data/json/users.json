@@ -1,0 +1,16 @@
+{
+  "users":[
+    {
+      "id":"0",
+      "email": "1131997238@qq.com",
+      "username":"gachi",
+      "password":"666666",
+      "avatarPath":"/data/images/avatars/0.jpg",
+      "token":"",
+      "role":"admin/member/user",
+      "commit":{
+        
+      }
+    }
+  ]
+}
