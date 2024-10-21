@@ -1,16 +1,64 @@
 {
-  "users":[
-    {
-      "id":"0",
-      "email": "1131997238@qq.com",
-      "username":"gachi",
-      "password":"666666",
-      "avatarPath":"/data/images/avatars/0.jpg",
-      "token":"",
-      "role":"admin/member/user",
-      "commit":{
-        
-      }
-    }
-  ]
+    "users": [
+        {
+            "id": "0",
+            "email": "1131997238@qq.com",
+            "username": "gachi",
+            "password": "666666",
+            "avatarPath": "/avatars/0.jpg"
+        },
+        {
+            "id": "beDyEShTsQmKG3bVkRaOL",
+            "avatarPath": {
+                "avatar": [
+                    {
+                        "size": 105074,
+                        "filepath": "/Users/gachikoi/Downloads/Programming/Front-end-Projects/shining-video-server/data/images/avatars/1e611d2921d610cd241259900.png",
+                        "newFilename": "1e611d2921d610cd241259900.png",
+                        "mimetype": "image/png",
+                        "mtime": "2024-10-21T12:43:55.048Z",
+                        "originalFilename": "社徽 1K.png"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "oywxOZCdQ7sUfCkmm9efK",
+            "avatarPath": {
+                "avatar": [
+                    {
+                        "size": 105074,
+                        "filepath": "/Users/gachikoi/Downloads/Programming/Front-end-Projects/shining-video-server/data/images/avatars/1e611d2921d610cd241259901.png",
+                        "newFilename": "1e611d2921d610cd241259901.png",
+                        "mimetype": "image/png",
+                        "mtime": "2024-10-21T12:45:18.942Z",
+                        "originalFilename": "社徽 1K.png"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "e2_Dosllqg743_SigUdVQ",
+            "avatarPath": {
+                "avatar": [
+                    {
+                        "size": 105074,
+                        "filepath": "/Users/gachikoi/Downloads/Programming/Front-end-Projects/shining-video-server/data/images/avatars/1e611d2921d610cd241259902.png",
+                        "newFilename": "1e611d2921d610cd241259902.png",
+                        "mimetype": "image/png",
+                        "mtime": "2024-10-21T12:48:25.459Z",
+                        "originalFilename": "社徽 1K.png"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "O5IzlgU6sFyVJjuE2oIMq",
+            "avatarPath": "/avatars/3ceabd0ffdd32ae610085e000.png"
+        },
+        {
+            "id": "dsYG576PqlOwp4RbY8yzj",
+            "avatarPath": "/avatars/faa134fd3393e9f78a1c4de00.png"
+        }
+    ]
 }
