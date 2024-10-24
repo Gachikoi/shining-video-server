@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import bodyParser from 'body-parser';
 import nodemailer from 'nodemailer'
 import fs from 'fs'
+import { User } from './type/type';
 
 
 const transporter = nodemailer.createTransport({
@@ -70,8 +71,29 @@ app.get('/activities', async (req, res) => {
 })
 
 //响应登录请求
-app.post('/login', bodyParser.json(), (req, res) => {
-  log(req.body.email)
+app.post('/login', bodyParser.json(), async (req, res) => {
+  try {
+    const { email, password } = req.body
+    const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'))
+    let id: string=''
+    const loginEmail = await usersDB.find<User>('/', (entry, index) => {
+      id = index as string
+      return entry.email === email
+    })
+    if (loginEmail) {
+      if (loginEmail.password === password) {
+        const { name, avatarPath } = loginEmail
+        res.send({ token: jwt.sign({ id }, privateKey), avatarPath, name })
+      }
+      else {
+        res.status(401).send('密码错误')
+      }
+    } else {
+      res.status(403).send('此邮箱还未注册')
+    }
+  } catch {
+    res.status(500).send('500 Internal Server Error')
+  }
 })
 
 //不做清除过期验证码的功能了，因为没什么用，还会增加程序开销。
@@ -127,20 +149,30 @@ app.post('/register', async (req, res) => {
           await deleteTempAvatarOnRegister(fileSavedPath)
           res.status(401).send('验证码错误')
         } else {
-          const id = nanoid()
-          const name = fields.name![0]
-          const password = fields.password![0]
-          const avatarPath = files.avatar![0].filepath.split('/images')[1]
           const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'))
-          const usersDBPush =usersDB.push(`/${id}`, {
-            name,
-            email,
-            password,
-            avatarPath,
+          const ifHasThisAccount = await usersDB.find('/', (entry, _) => {
+            return entry.email === email
           })
-          const registerPrepareDBDelete = registerPrepareDB.delete(`/${email}`)
-          await Promise.all([usersDBPush,registerPrepareDBDelete])
-          res.send({token:jwt.sign({ id }, privateKey),avatarPath,id})
+          if (ifHasThisAccount) {
+            const asyncFunc1 = deleteTempAvatarOnRegister(fileSavedPath)
+            const asyncFunc2 = registerPrepareDB.delete(`/${email}`)
+            await Promise.all([asyncFunc1, asyncFunc2])
+            res.status(403).send('此邮箱已被注册过')
+          } else {
+            const id = nanoid()
+            const name = fields.name![0]
+            const password = fields.password![0]
+            const avatarPath = files.avatar![0].filepath.split('/images')[1]
+            const usersDBPush = usersDB.push(`/${id}`, {
+              name,
+              email,
+              password,
+              avatarPath,
+            })
+            const registerPrepareDBDelete = registerPrepareDB.delete(`/${email}`)
+            await Promise.all([usersDBPush, registerPrepareDBDelete])
+            res.send({ token: jwt.sign({ id }, privateKey), avatarPath })
+          }
         }
       } else {
         await deleteTempAvatarOnRegister(fileSavedPath)
@@ -155,9 +187,9 @@ app.post('/register', async (req, res) => {
 })
 
 //如果还未发送验证码，用户就申请注册，则需要删除刚刚存储的文件。
-async function deleteTempAvatarOnRegister(fileSavedPath: string) {
+async function deleteTempAvatarOnRegister(fileSavedPath: string): Promise<void> {
   try {
-    await fs.unlink(fileSavedPath, (err) => {
+    await fs.unlink(fileSavedPath, () => {
       return new Error('删除文件时出现问题')
     });
   } catch (error) {
