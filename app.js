@@ -18,10 +18,10 @@ const transporter = nodemailer.createTransport({
     }
 });
 const privateKey = 'fh2fRyBHtTR_pnxLWmhcJ';
-const __filename = fileURLToPath(import.meta.url);
+const projectRootDirectory = fileURLToPath(import.meta.url).split('/app.js')[0];
 const app = express();
 //必须放在前面，否则因为请求json数据的路径也是/members，images/members下的静态资源将无法响应
-app.use(express.static(__filename + '/../data/images'));
+app.use(express.static(projectRootDirectory + '/data/images'));
 //声明中间件，限制向服务器发送请求的ip
 // function 
 //响应前端请求的主页资源
@@ -121,7 +121,7 @@ app.get('/code/:email', async (req, res) => {
 //注册
 app.post('/register', async (req, res) => {
     const form = formidable({
-        uploadDir: __filename + '/../data/images/avatars/',
+        uploadDir: projectRootDirectory + '/data/images/avatars/',
         keepExtensions: true
     });
     let fileSavedPath; // 记录文件的路径
@@ -188,15 +188,199 @@ app.post('/register', async (req, res) => {
 });
 //如果还未发送验证码，用户就申请注册，则需要删除刚刚存储的文件。
 async function deleteTempAvatarOnRegister(fileSavedPath) {
-    try {
-        await fs.unlink(fileSavedPath, () => {
-            return new Error('删除文件时出现问题');
+    return new Promise((resolve, reject) => {
+        fs.unlink(fileSavedPath, (err) => {
+            log(err);
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve();
+            }
         });
+    });
+}
+async function deletePreviousAvatar(previousPath) {
+    return new Promise((resolve, reject) => {
+        fs.unlink(projectRootDirectory + "/data/images" + previousPath, (err) => {
+            log(err);
+            if (err) {
+                //reject的reason会作为错误信息传递给后续通过catch捕捉
+                reject(err);
+                return;
+            }
+            else {
+                //resolve,reject不会阻挡后续代码的执行，所以有时要加return
+                resolve();
+                return;
+            }
+        });
+    });
+}
+//更改用户信息
+app.patch('/user/info', async (req, res) => {
+    let decoded;
+    let id;
+    try {
+        decoded = jwt.verify(req.headers.token, privateKey);
+        id = decoded.id;
+    }
+    catch (_a) {
+        res.status(401).send('token校验失败');
+        return;
+    }
+    const form = formidable({
+        uploadDir: projectRootDirectory + '/data/images/avatars/',
+        keepExtensions: true
+    });
+    try {
+        const [fields, files] = await form.parse(req);
+        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
+        let async1, async2, async3, async4;
+        if (fields.name) {
+            const name = fields.name[0];
+            async1 = usersDB.push(`/${id}/name`, name);
+        }
+        if (fields.password) {
+            const password = fields.password[0];
+            async2 = usersDB.push(`/${id}/password`, password);
+        }
+        let avatarPath;
+        if (files.avatar) {
+            const previousPath = await usersDB.getData(`/${id}/avatarPath`);
+            async4 = deletePreviousAvatar(previousPath);
+            avatarPath = files.avatar[0].filepath.split('/images')[1];
+            async3 = usersDB.push(`/${id}/avatarPath`, avatarPath);
+        }
+        await Promise.all([async1, async2, async3, async4]);
+        if (avatarPath) {
+            res.send(avatarPath);
+        }
+        else {
+            res.send();
+        }
     }
     catch (error) {
-        log(error.message);
+        log(error);
+        res.status(500).send('500 Internal Server Error');
     }
-}
+});
+//发送评论
+app.post('/postComment', bodyParser.json(), async (req, res) => {
+    let decoded;
+    let id;
+    try {
+        decoded = jwt.verify(req.headers.token, privateKey);
+        id = decoded.id;
+    }
+    catch (_a) {
+        res.status(401).send('token校验失败');
+        return;
+    }
+    try {
+        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
+        const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
+        const { name, avatarPath } = await usersDB.getData(`/${id}`);
+        await commentsDB.push('/comments[]', {
+            id: req.body.id,
+            date: req.body.date,
+            user: {
+                avatarPath,
+                name,
+                id
+            },
+            content: req.body.content
+        });
+        res.send('评论成功');
+    }
+    catch (_b) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+//获取评论
+app.get('/getComments', async (req, res) => {
+    try {
+        const commentDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
+        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
+        let comments = await commentDB.getData("/comments");
+        //注意，forEach的回调期待为一个同步函数，不会等待Promise返回
+        //如果不“await Promise.all()， map 返回的就是一个 Promise 数组(Promise < Comment > [])。
+        //await comments.map(...) 只是等待了 map 本身的同步执行，而没有等待每个 Promise 的完成。
+        //这导致 comments 最终是 Promise < Comment > [] 类型，不符合 CommentArr 的类型要求。
+        // 要解决这个问题，可以用 Promise.all 来等待 comments.map 中的所有 Promise 完成，从而确保得到的是 Comment 数组，而不是 Promise < Comment > []。
+        comments = await Promise.all(comments.map(async (comment) => {
+            const { name, avatarPath } = await usersDB.getData(`/${comment.user.id}`);
+            comment.user.name = name;
+            comment.user.avatarPath = avatarPath;
+            comment.replies = await Promise.all(comment.replies.map(async (reply) => {
+                const { name, avatarPath } = await usersDB.getData(`/${reply.user.id}`);
+                reply.user.name = name;
+                reply.user.avatarPath = avatarPath;
+                return reply;
+            }));
+            return comment;
+        }));
+        // 采用for...of遍历更易于理解，但是如果要最大化并发性能，map更加方便，因为map已经为我们封装好了遍历数组的同时并发、再统一等待的行为。
+        // for (const comment of comments){
+        //   const { name, avatarPath } = await usersDB.getData(`/${comment.user.id}`)
+        //   comment.user.name = name
+        //   comment.user.avatarPath = avatarPath
+        //   for (const reply of comment.replies) {
+        //     const { name, avatarPath } = await usersDB.getData(`/${reply.user.id}`)
+        //     reply.user.name = name
+        //     reply.user.avatarPath = avatarPath
+        //   }
+        // }
+        res.send(comments);
+    }
+    catch (_a) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+//发送回复
+app.post('/postReply', bodyParser.json(), async (req, res) => {
+    let decoded;
+    let id;
+    try {
+        decoded = jwt.verify(req.headers.token, privateKey);
+        id = decoded.id;
+    }
+    catch (_a) {
+        res.status(401).send('token校验失败');
+        return;
+    }
+    try {
+        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
+        const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
+        const async1 = usersDB.getData(`/${id}`);
+        let repliedCommentIndex;
+        const async2 = commentsDB.find('/comments', (comment, index) => {
+            repliedCommentIndex = index;
+            return comment.id === req.body.commentID;
+        });
+        const { name, avatarPath } = await async1;
+        await async2;
+        await commentsDB.push(`/comments[${repliedCommentIndex}]/replies[]`, {
+            id: req.body.id,
+            date: req.body.date,
+            user: {
+                avatarPath,
+                name,
+                id
+            },
+            content: req.body.content
+        });
+        res.send('回复成功');
+    }
+    catch (_b) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+//用来处理所有未定义的接口。
+//一定要放到最后，否则这段代码后边的所有请求都会被拦截。
+app.use((req, res) => {
+    res.status(404).send('404 Not Found');
+});
 app.listen('777', async () => {
     log('qidong!');
 });
