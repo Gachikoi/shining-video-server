@@ -46,28 +46,36 @@
   "carouselImages": [
     {
       "id": "0",
-      "path": "/carouselImage/0.png",
-      "alt": "陈晓月"
+      "path": "/carouselImage/2024.jpg",
+      "alt": "2024晒你拜年祭",
+      "link":"https://www.bilibili.com/video/BV1UF4m1T73e/"
     },
     {
       "id": "1",
-      "path": "/carouselImage/1.png",
-      "alt": "集章册正面"
+      "path": "/carouselImage/2023.jpg",
+      "alt": "2023晒你拜年祭",
+      "title": "2023晒你拜年祭",
+      "link":"https://www.bilibili.com/video/BV1Hv4y1y7WX/?spm_id_from=333.1387.upload.video_card.click&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
     },
     {
       "id": "2",
-      "path": "/carouselImage/2.png",
-      "alt": "若似霜"
+      "path": "/carouselImage/2022.jpg",
+      "alt": "2022晒你拜年祭",
+      "link":"https://www.bilibili.com/video/BV1fa41117zi/?spm_id_from=333.1387.upload.video_card.click&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
     },
     {
       "id": "3",
-      "path": "/carouselImage/3.png",
-      "alt": "集章册反面"
+      "path": "/carouselImage/2021.jpg",
+      "alt": "2021晒你拜年祭",
+      "link":"https://www.bilibili.com/video/BV1Zb4y197fc/?spm_id_from=333.1387.upload.video_card.click&vd_source=f5bba81ca8b73b2852e36b66ab1dc349",
+      "title": "2021晒你拜年祭"
     },
     {
       "id": "4",
-      "path": "/carouselImage/4.png",
-      "alt": "表表表面"
+      "path": "/carouselImage/2020.jpg",
+      "alt": "2020晒你拜年祭",
+      "link":"https://www.bilibili.com/video/BV1r7411a7GU/?spm_id_from=333.1387.upload.video_card.click&vd_source=f5bba81ca8b73b2852e36b66ab1dc349",
+      "title":"2020晒你拜年祭"
     }
   ]
 }

@@ -278,15 +278,11 @@ app.post('/postComment', bodyParser.json(), async (req, res) => {
         return;
     }
     try {
-        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
         const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
-        const { name, avatarPath } = await usersDB.getData(`/${id}`);
         await commentsDB.push('/comments[]', {
             id: req.body.id,
             date: req.body.date,
             user: {
-                avatarPath,
-                name,
                 id
             },
             content: req.body.content
@@ -312,12 +308,14 @@ app.get('/getComments', async (req, res) => {
             const { name, avatarPath } = await usersDB.getData(`/${comment.user.id}`);
             comment.user.name = name;
             comment.user.avatarPath = avatarPath;
-            comment.replies = await Promise.all(comment.replies.map(async (reply) => {
-                const { name, avatarPath } = await usersDB.getData(`/${reply.user.id}`);
-                reply.user.name = name;
-                reply.user.avatarPath = avatarPath;
-                return reply;
-            }));
+            if (comment.replies) {
+                comment.replies = await Promise.all(comment.replies.map(async (reply) => {
+                    const { name, avatarPath } = await usersDB.getData(`/${reply.user.id}`);
+                    reply.user.name = name;
+                    reply.user.avatarPath = avatarPath;
+                    return reply;
+                }));
+            }
             return comment;
         }));
         // 采用for...of遍历更易于理解，但是如果要最大化并发性能，map更加方便，因为map已经为我们封装好了遍历数组的同时并发、再统一等待的行为。
@@ -333,7 +331,8 @@ app.get('/getComments', async (req, res) => {
         // }
         res.send(comments);
     }
-    catch (_a) {
+    catch (error) {
+        log(error);
         res.status(500).send('500 Internal Server Error');
     }
 });
@@ -350,22 +349,16 @@ app.post('/postReply', bodyParser.json(), async (req, res) => {
         return;
     }
     try {
-        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
         const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
-        const async1 = usersDB.getData(`/${id}`);
         let repliedCommentIndex;
-        const async2 = commentsDB.find('/comments', (comment, index) => {
+        await commentsDB.find('/comments', (comment, index) => {
             repliedCommentIndex = index;
             return comment.id === req.body.commentID;
         });
-        const { name, avatarPath } = await async1;
-        await async2;
         await commentsDB.push(`/comments[${repliedCommentIndex}]/replies[]`, {
             id: req.body.id,
             date: req.body.date,
             user: {
-                avatarPath,
-                name,
                 id
             },
             content: req.body.content
@@ -373,6 +366,45 @@ app.post('/postReply', bodyParser.json(), async (req, res) => {
         res.send('回复成功');
     }
     catch (_b) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+app.delete('/deleteReply/:commentID/:replyID', async (req, res) => {
+    const { commentID, replyID } = req.params;
+    try {
+        const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
+        let commentIndex;
+        let replyIndex;
+        await commentsDB.find(`/comments`, (comment, index) => {
+            if (comment.id === commentID) {
+                commentIndex = index;
+                comment.replies.find((reply, index) => {
+                    replyIndex = index;
+                    return reply.id === replyID;
+                });
+            }
+            return comment.id === commentID;
+        });
+        await commentsDB.delete(`/comments[${commentIndex}]/replies[${replyIndex}]`);
+        res.send('删除成功');
+    }
+    catch (_a) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+app.delete('/deleteComment/:commentID', async (req, res) => {
+    const { commentID } = req.params;
+    try {
+        const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
+        let commentIndex;
+        await commentsDB.find('/comments', (comment, index) => {
+            commentIndex = index;
+            return comment.id === commentID;
+        });
+        await commentsDB.delete(`/comments[${commentIndex}]`);
+        res.send('删除成功');
+    }
+    catch (_a) {
         res.status(500).send('500 Internal Server Error');
     }
 });

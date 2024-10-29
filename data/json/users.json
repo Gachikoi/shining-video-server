@@ -1,8 +1,14 @@
 {
-    "qurNfiYPiDwqqGKgJqlLb": {
-        "name": "ガチ",
+    "N8aMKTtSamrUKvwWsFspw": {
+        "name": "gachi",
         "email": "1131997238@qq.com",
-        "password": "112233",
-        "avatarPath": "/avatars/aa5aeaa8c320ae96d7a140802.jpg"
+        "password": "111111",
+        "avatarPath": "/avatars/ab20f85fc19c96e3aed1f3600.jpg"
+    },
+    "ONCfwIoigHdVoYOqTHlY6": {
+        "name": "test",
+        "email": "k1ss.sakura@outlook.com",
+        "password": "111111",
+        "avatarPath": "/avatars/eb51ea33b84cf0b43d748eb00.jpg"
     }
 }
