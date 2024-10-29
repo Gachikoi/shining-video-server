@@ -1,22 +1,13 @@
 {
     "comments": [
         {
-            "id": "DmX5bcUKE5TokMxn0ZGge",
-            "date": 1730121735860,
+            "id": "2E0qyk892c457RNVRjmQL",
+            "date": 1730186756439,
             "user": {
                 "id": "N8aMKTtSamrUKvwWsFspw"
             },
-            "content": "1",
-            "replies": [
-                {
-                    "id": "ORYXiTy15Z5LMwC5_HDHH",
-                    "date": 1730121738792,
-                    "user": {
-                        "id": "N8aMKTtSamrUKvwWsFspw"
-                    },
-                    "content": "2"
-                }
-            ]
+            "content": "我喜欢藤田琴音",
+            "replies": []
         }
     ]
 }

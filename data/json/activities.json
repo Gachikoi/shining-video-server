@@ -1,24 +1,30 @@
 {
-  "offline": [
+  "chat": [
     {
       "id": "0",
-      "path": "/data/images/activities/0.png"
+      "path": "/activities/chat/0.png"
     },
     {
       "id": "1",
-      "path": "/data/images/activities/1.png"
+      "path": "/activities/chat/1.png"
     },
     {
       "id": "2",
-      "path": "/data/images/activities/2.png"
-    },
+      "path": "/activities/chat/2.png"
+    }
+  ],
+  "image":[
     {
       "id": "3",
-      "path": "/data/images/activities/3.png"
+      "path": "/activities/image/3.jpg"
     },
     {
       "id": "4",
-      "path": "/data/images/activities/4.png"
+      "path": "/activities/image/4.jpg"
+    },
+    {
+      "id": "5",
+      "path": "/activities/image/5.jpg"
     }
   ]
 }

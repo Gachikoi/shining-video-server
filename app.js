@@ -22,6 +22,7 @@ const projectRootDirectory = fileURLToPath(import.meta.url).split('/app.js')[0];
 const app = express();
 //必须放在前面，否则因为请求json数据的路径也是/members，images/members下的静态资源将无法响应
 app.use(express.static(projectRootDirectory + '/data/images'));
+app.use(express.static(projectRootDirectory + '/data/journal'));
 //声明中间件，限制向服务器发送请求的ip
 // function 
 //响应前端请求的主页资源
@@ -57,10 +58,11 @@ app.get('/members/:key', async (req, res) => {
     }
 });
 //响应前端请求的Activity.vue内的图片
-app.get('/activities', async (req, res) => {
+app.get('/activity/:key', async (req, res) => {
     try {
-        const db = new JsonDB(new Config("./data/json/activities.json", true, true, '/'));
-        res.json(await db.getData(`/offline`));
+        const { key } = req.params;
+        const activitiesDB = new JsonDB(new Config("./data/json/activities.json", true, true, '/'));
+        res.send(await activitiesDB.getData(`/${key}`));
     }
     catch (_a) {
         res.status(500).send('500 Internal Server Error');
@@ -369,9 +371,21 @@ app.post('/postReply', bodyParser.json(), async (req, res) => {
         res.status(500).send('500 Internal Server Error');
     }
 });
+//删除特定的回复
 app.delete('/deleteReply/:commentID/:replyID', async (req, res) => {
+    let decoded;
+    let id;
+    try {
+        decoded = jwt.verify(req.headers.token, privateKey);
+        id = decoded.id;
+    }
+    catch (_a) {
+        res.status(401).send('token校验失败');
+        return;
+    }
     const { commentID, replyID } = req.params;
     try {
+        let ifUserIDConfirmed = false;
         const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
         let commentIndex;
         let replyIndex;
@@ -379,30 +393,72 @@ app.delete('/deleteReply/:commentID/:replyID', async (req, res) => {
             if (comment.id === commentID) {
                 commentIndex = index;
                 comment.replies.find((reply, index) => {
-                    replyIndex = index;
+                    if (reply.id === replyID) {
+                        if (reply.user.id === id) {
+                            ifUserIDConfirmed = true;
+                            replyIndex = index;
+                        }
+                    }
                     return reply.id === replyID;
                 });
             }
             return comment.id === commentID;
         });
-        await commentsDB.delete(`/comments[${commentIndex}]/replies[${replyIndex}]`);
-        res.send('删除成功');
+        if (ifUserIDConfirmed) {
+            await commentsDB.delete(`/comments[${commentIndex}]/replies[${replyIndex}]`);
+            res.send('删除成功');
+        }
+        else {
+            res.status(401).send('你正在删除一个不属于自己的回复，删除失败');
+        }
     }
-    catch (_a) {
+    catch (_b) {
         res.status(500).send('500 Internal Server Error');
     }
 });
+//删除特定的评论
 app.delete('/deleteComment/:commentID', async (req, res) => {
+    let decoded;
+    let id;
+    try {
+        decoded = jwt.verify(req.headers.token, privateKey);
+        id = decoded.id;
+    }
+    catch (_a) {
+        res.status(401).send('token校验失败');
+        return;
+    }
     const { commentID } = req.params;
     try {
+        let ifUserIDConfirmed = false;
         const commentsDB = new JsonDB(new Config("./data/json/comments.json", true, true, '/'));
         let commentIndex;
         await commentsDB.find('/comments', (comment, index) => {
-            commentIndex = index;
+            if (comment.id === commentID) {
+                if (comment.user.id === id) {
+                    commentIndex = index;
+                    ifUserIDConfirmed = true;
+                }
+            }
             return comment.id === commentID;
         });
-        await commentsDB.delete(`/comments[${commentIndex}]`);
-        res.send('删除成功');
+        if (ifUserIDConfirmed) {
+            await commentsDB.delete(`/comments[${commentIndex}]`);
+            res.send('删除成功');
+        }
+        else {
+            res.status(401).send('你正在删除一个不属于自己的评论，删除失败');
+        }
+    }
+    catch (_b) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+//获取社刊数据
+app.get('/getJournals', async (req, res) => {
+    try {
+        const journalsDB = new JsonDB(new Config("./data/json/journals.json", true, true, '/'));
+        res.send(await journalsDB.getData('/journals'));
     }
     catch (_a) {
         res.status(500).send('500 Internal Server Error');
