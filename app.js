@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import nodemailer from 'nodemailer';
 import fs from 'fs';
+import user from './router/user/user.js';
 const transporter = nodemailer.createTransport({
     host: 'smtp.qq.com',
     port: 465,
@@ -23,6 +24,7 @@ const app = express();
 //必须放在前面，否则因为请求json数据的路径也是/members，images/members下的静态资源将无法响应
 app.use(express.static(projectRootDirectory + '/data/images'));
 app.use(express.static(projectRootDirectory + '/data/journal'));
+app.use('/user', user);
 //声明中间件，限制向服务器发送请求的ip
 // function 
 //响应前端请求的主页资源
@@ -74,14 +76,16 @@ app.post('/login', bodyParser.json(), async (req, res) => {
         const { email, password } = req.body;
         const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
         let id = '';
+        let permission = false;
         const loginEmail = await usersDB.find('/', (entry, index) => {
             id = index;
+            permission = entry.permission;
             return entry.email === email;
         });
         if (loginEmail) {
             if (loginEmail.password === password) {
                 const { name, avatarPath } = loginEmail;
-                res.send({ token: jwt.sign({ id }, privateKey), avatarPath, name });
+                res.send({ token: jwt.sign({ id }, privateKey), avatarPath, name, permission });
             }
             else {
                 res.status(401).send('密码错误');
@@ -169,6 +173,7 @@ app.post('/register', async (req, res) => {
                             email,
                             password,
                             avatarPath,
+                            permission: false
                         });
                         const registerPrepareDBDelete = registerPrepareDB.delete(`/${email}`);
                         await Promise.all([usersDBPush, registerPrepareDBDelete]);
@@ -202,71 +207,6 @@ async function deleteTempAvatarOnRegister(fileSavedPath) {
         });
     });
 }
-async function deletePreviousAvatar(previousPath) {
-    return new Promise((resolve, reject) => {
-        fs.unlink(projectRootDirectory + "/data/images" + previousPath, (err) => {
-            log(err);
-            if (err) {
-                //reject的reason会作为错误信息传递给后续通过catch捕捉
-                reject(err);
-                return;
-            }
-            else {
-                //resolve,reject不会阻挡后续代码的执行，所以有时要加return
-                resolve();
-                return;
-            }
-        });
-    });
-}
-//更改用户信息
-app.patch('/user/info', async (req, res) => {
-    let decoded;
-    let id;
-    try {
-        decoded = jwt.verify(req.headers.token, privateKey);
-        id = decoded.id;
-    }
-    catch (_a) {
-        res.status(401).send('token校验失败');
-        return;
-    }
-    const form = formidable({
-        uploadDir: projectRootDirectory + '/data/images/avatars/',
-        keepExtensions: true
-    });
-    try {
-        const [fields, files] = await form.parse(req);
-        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
-        let async1, async2, async3, async4;
-        if (fields.name) {
-            const name = fields.name[0];
-            async1 = usersDB.push(`/${id}/name`, name);
-        }
-        if (fields.password) {
-            const password = fields.password[0];
-            async2 = usersDB.push(`/${id}/password`, password);
-        }
-        let avatarPath;
-        if (files.avatar) {
-            const previousPath = await usersDB.getData(`/${id}/avatarPath`);
-            async4 = deletePreviousAvatar(previousPath);
-            avatarPath = files.avatar[0].filepath.split('/images')[1];
-            async3 = usersDB.push(`/${id}/avatarPath`, avatarPath);
-        }
-        await Promise.all([async1, async2, async3, async4]);
-        if (avatarPath) {
-            res.send(avatarPath);
-        }
-        else {
-            res.send();
-        }
-    }
-    catch (error) {
-        log(error);
-        res.status(500).send('500 Internal Server Error');
-    }
-});
 //发送评论
 app.post('/postComment', bodyParser.json(), async (req, res) => {
     let decoded;
@@ -459,6 +399,16 @@ app.get('/getJournals', async (req, res) => {
     try {
         const journalsDB = new JsonDB(new Config("./data/json/journals.json", true, true, '/'));
         res.send(await journalsDB.getData('/journals'));
+    }
+    catch (_a) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+//获取组员作品数据
+app.get('/worksInfo/get', async (req, res) => {
+    try {
+        const worksDB = new JsonDB(new Config("./data/json/works.json", true, true, '/'));
+        res.send(await worksDB.getData('/'));
     }
     catch (_a) {
         res.status(500).send('500 Internal Server Error');

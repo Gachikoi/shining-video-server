@@ -3,12 +3,14 @@
         "name": "ガチ恋",
         "email": "1131997238@qq.com",
         "password": "111111",
-        "avatarPath": "/avatars/ab20f85fc19c96e3aed1f3600.jpg"
+        "avatarPath": "/avatars/99235fea9daacbbe6971b7204.jpg",
+        "permission": true
     },
     "ONCfwIoigHdVoYOqTHlY6": {
         "name": "test",
         "email": "k1ss.sakura@outlook.com",
         "password": "111111",
-        "avatarPath": "/avatars/eb51ea33b84cf0b43d748eb00.jpg"
+        "avatarPath": "/avatars/eb51ea33b84cf0b43d748eb00.jpg",
+        "permission": false
     }
 }
