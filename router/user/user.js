@@ -101,13 +101,10 @@ router.patch('/memberInfo/submit', bodyParser.json(), async (req, res) => {
         const result = await async2;
         if (result) {
             await membersDB.push(`/otherMembers[${previousIndex}]`, {
-                id,
-                path: avatarPath,
-                name,
                 title: req.body.title,
                 contact: req.body.contact,
                 bililink: req.body.fullLink
-            });
+            }, false); //merge date rather than replace old value
         }
         else {
             await membersDB.push('/otherMembers[]', {
@@ -122,6 +119,60 @@ router.patch('/memberInfo/submit', bodyParser.json(), async (req, res) => {
         res.send('提交成功');
     }
     catch (_b) {
+        res.status(500).send('500 Internal Server Error');
+    }
+});
+//编辑作品信息
+router.post('/worksInfo/submit', async (req, res) => {
+    var _a, _b;
+    let decoded;
+    let id;
+    try {
+        decoded = jwt.verify(req.headers.token, privateKey);
+        id = decoded.id;
+    }
+    catch (_c) {
+        res.status(401).send('token校验失败');
+        return;
+    }
+    try {
+        const form = formidable({
+            uploadDir: projectRootDirectory + '/data/images/works/',
+            keepExtensions: true,
+            filename: (name, ext, { originalFilename, mimetype }, form) => {
+                return `${Date.now()}` + '.' + (mimetype === null || mimetype === void 0 ? void 0 : mimetype.split('/')[1]);
+            }
+        });
+        const async1 = form.parse(req);
+        const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'));
+        const worksDB = new JsonDB(new Config("./data/json/works.json", true, true, '/'));
+        const async2 = usersDB.getData(`/${id}`);
+        const [[fields, files], { name, avatarPath }] = await Promise.all([async1, async2]);
+        worksDB.push(`/${id}`, {
+            name,
+            avatarPath,
+        });
+        await Promise.all([
+            Promise.all(((_a = files.videoCovers) === null || _a === void 0 ? void 0 : _a.map(async (cover, index) => {
+                await worksDB.push(`/${id}/videos[]`, {
+                    id: fields.videoIDs[index],
+                    title: fields.videoTitles[index],
+                    path: cover.filepath.split('/images')[1],
+                    link: fields.videoLinks[index],
+                });
+            })) || [await worksDB.push(`/${id}/videos`, [])]),
+            Promise.all(((_b = files.typesettingImgs) === null || _b === void 0 ? void 0 : _b.map(async (img, index) => {
+                log(img);
+                await worksDB.push(`/${id}/typesettings[]`, {
+                    id: fields.typesettingIDs[index],
+                    path: img.filepath.split('/images')[1]
+                });
+            })) || [await worksDB.push(`/${id}/typesettings`, [])])
+        ]);
+        res.send('编辑成功');
+    }
+    catch (err) {
+        log(err);
         res.status(500).send('500 Internal Server Error');
     }
 });

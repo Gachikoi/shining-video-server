@@ -76,21 +76,6 @@
         }
     ],
     "otherMembers": [
-        {
-            "id": "7",
-            "path": "/members/7.jpg",
-            "name": "高冷",
-            "title": "组员",
-            "contact": "QQ：3181259291",
-            "bililink": "https://space.bilibili.com/456731002"
-        },
-        {
-            "id": "N8aMKTtSamrUKvwWsFspw",
-            "path": "/avatars/99235fea9daacbbe6971b7204.jpg",
-            "name": "ガチ恋",
-            "title": "1",
-            "contact": "1",
-            "bililink": "http://1"
-        }
+
     ]
 }
