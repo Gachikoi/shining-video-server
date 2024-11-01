@@ -1,57 +1,20 @@
 {
-    "ONCfwIoigHdVoYOqTHlY6": {
-        "name": "test",
-        "avatarPath": "/avatars/eb51ea33b84cf0b43d748eb00.jpg",
+    "N8aMKTtSamrUKvwWsFspw": {
+        "name": "ガチ恋",
+        "avatarPath": "/avatars/99235fea9daacbbe6971b7204.jpg",
         "videos": [
             {
-                "id": "0",
-                "title": "What are you doing!（魔性剪辑）",
-                "path": "/lastestVideos/0.jpg",
-                "link": "https://www.bilibili.com/video/BV12V4y1F7j9/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
-            },
-            {
-                "id": "1",
-                "title": "晒你2024拜年祭单品】来自新世界",
-                "path": "/lastestVideos/1.jpg",
-                "link": "https://www.bilibili.com/video/BV1zH4y1Y7Ht/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
-            },
-            {
-                "id": "2",
-                "title": "晒你2024拜年祭单品】思 考 过 载",
-                "path": "/lastestVideos/2.jpg",
-                "link": "https://www.bilibili.com/video/BV1jy421h7Nk/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
-            },
-            {
-                "id": "3",
-                "title": "【86/梅菲斯特】纵使硝烟分离两人",
-                "path": "/lastestVideos/3.jpg",
-                "link": "https://www.bilibili.com/video/BV1Vy421h7M6/?spm_id_from=333.999.0.0&vd_source=f5bba81ca8b73b2852e36b66ab1dc349"
+                "id": "OH_t5HwP49r2QwHAh4oCY",
+                "path": "/works/Qwz3TnqlydGzcwvhtINEY.jpeg",
+                "link": "1",
+                "title": "1"
             }
         ],
         "typesettings": [
             {
-                "id": "0",
-                "path": "/lastestTypesettings/0.png"
-            },
-            {
-                "id": "1",
-                "path": "/lastestTypesettings/1.png"
-            },
-            {
-                "id": "2",
-                "path": "/lastestTypesettings/2.png"
-            },
-            {
-                "id": "3",
-                "path": "/lastestTypesettings/3.png"
+                "id": "-i0iIKdKXwJp2p-J5tGja",
+                "path": "/works/En_-YgzZI3DoiLPbA6q0U.jpeg"
             }
-        ]
-    },
-    "N8aMKTtSamrUKvwWsFspw": {
-        "name": "ガチ恋",
-        "avatarPath": "/avatars/99235fea9daacbbe6971b7204.jpg",
-        "videos": [],
-        "typesettings": [
         ]
     }
 }

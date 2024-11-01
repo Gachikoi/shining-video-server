@@ -1,5 +1,6 @@
 import { log } from 'console';
 import { JsonDB, Config } from 'node-json-db';
+import { nanoid } from 'nanoid';
 import { fileURLToPath } from 'url';
 import formidable from 'formidable';
 import jwt from 'jsonwebtoken';
@@ -140,7 +141,7 @@ router.post('/worksInfo/submit', async (req, res) => {
             uploadDir: projectRootDirectory + '/data/images/works/',
             keepExtensions: true,
             filename: (name, ext, { originalFilename, mimetype }, form) => {
-                return `${Date.now()}` + '.' + (mimetype === null || mimetype === void 0 ? void 0 : mimetype.split('/')[1]);
+                return `${nanoid()}` + '.' + (mimetype === null || mimetype === void 0 ? void 0 : mimetype.split('/')[1]);
             }
         });
         const async1 = form.parse(req);
@@ -148,10 +149,124 @@ router.post('/worksInfo/submit', async (req, res) => {
         const worksDB = new JsonDB(new Config("./data/json/works.json", true, true, '/'));
         const async2 = usersDB.getData(`/${id}`);
         const [[fields, files], { name, avatarPath }] = await Promise.all([async1, async2]);
-        worksDB.push(`/${id}`, {
-            name,
-            avatarPath,
-        });
+        //如果之前没有这个用户的作品集，则创建一个
+        if (!await worksDB.exists(`/${id}`)) {
+            await worksDB.push(`/`, {
+                [id]: {
+                    name,
+                    avatarPath,
+                    videos: [],
+                    typesettings: []
+                }
+            });
+        }
+        //删除已经不在作品集中的作品的数据和其图片的本地存储——视频作品
+        if (fields.preVideoIDs) {
+            log('prevideo');
+            let toDeteleVideoPaths = [];
+            let preVideos = await worksDB.getData(`/${id}/videos`);
+            preVideos.map((preVideo, index) => {
+                let found = false;
+                for (const id of fields.preVideoIDs) {
+                    if (id === preVideo.id) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found === false) {
+                    toDeteleVideoPaths.push(preVideo.path);
+                }
+            });
+            preVideos = fields.preVideoIDs.map((id, index) => {
+                return {
+                    id,
+                    path: fields.preVideoPaths[index],
+                    link: fields.preVideoLinks[index],
+                    title: fields.preVideoTitles[index]
+                };
+            });
+            await Promise.all([
+                Promise.all(toDeteleVideoPaths.map(async (path) => {
+                    await deletePreviousWorks(path);
+                })),
+                worksDB.push(`/${id}/videos`, preVideos)
+            ]);
+            // //不能这样来删除db中的数组，因为随着删除，数组每个元素的index会发生移动，会导致数组越界
+            // await worksDB.find(`/${id}/videos`, (video, index) => {
+            //   let found = false
+            //   for (const id of fields.preVideoIDs!) {
+            //     if (id === video.id) {
+            //       found = true
+            //       break
+            //     }
+            //   }
+            //   if (found === false) {
+            //     //因为find的回调函数不能为async，所以这里就不等待返回值了
+            //     deletePreviousWorks(video.path)
+            //     worksDB.delete(`/${id}/videos[${index}]`)
+            //   }
+            //   return false
+            // })
+        }
+        else {
+            let toDeteleVideoPaths = [];
+            let preVideos = await worksDB.getData(`/${id}/videos`);
+            preVideos.map((video, index) => {
+                toDeteleVideoPaths.push(video.path);
+            });
+            preVideos = [];
+            await Promise.all([
+                Promise.all(toDeteleVideoPaths.map(async (path) => {
+                    await deletePreviousWorks(path);
+                })),
+                worksDB.push(`/${id}/videos`, preVideos)
+            ]);
+        }
+        //删除已经不在作品集中的作品的数据和其图片的本地存储——排版作品
+        if (fields.preTypesettingIDs) {
+            log('pretype');
+            let toDeteleTypesettingPaths = [];
+            let typesettings = await worksDB.getData(`/${id}/typesettings`);
+            typesettings.map((typesetting, index) => {
+                let found = false;
+                for (const id of fields.preTypesettingIDs) {
+                    if (id === typesetting.id) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found === false) {
+                    toDeteleTypesettingPaths.push(typesetting.path);
+                }
+            });
+            typesettings = fields.preTypesettingIDs.map((id, index) => {
+                return {
+                    id,
+                    path: fields.preTypesettingPaths[index]
+                };
+            });
+            await Promise.all([
+                Promise.all(toDeteleTypesettingPaths.map(async (path) => {
+                    await deletePreviousWorks(path);
+                })),
+                worksDB.push(`/${id}/typesettings`, typesettings)
+            ]);
+        }
+        else {
+            let toDeteleTypesettingPaths = [];
+            let typesettings = await worksDB.getData(`/${id}/typesettings`);
+            typesettings.map((typesetting, index) => {
+                toDeteleTypesettingPaths.push(typesetting.path);
+            });
+            typesettings = [];
+            await Promise.all([
+                Promise.all(toDeteleTypesettingPaths.map(async (path) => {
+                    await deletePreviousWorks(path);
+                })),
+                worksDB.push(`/${id}/typesettings`, typesettings)
+            ]);
+        }
+        //处理新增的作品
         await Promise.all([
             Promise.all(((_a = files.videoCovers) === null || _a === void 0 ? void 0 : _a.map(async (cover, index) => {
                 await worksDB.push(`/${id}/videos[]`, {
@@ -160,14 +275,13 @@ router.post('/worksInfo/submit', async (req, res) => {
                     path: cover.filepath.split('/images')[1],
                     link: fields.videoLinks[index],
                 });
-            })) || [await worksDB.push(`/${id}/videos`, [])]),
+            })) || []),
             Promise.all(((_b = files.typesettingImgs) === null || _b === void 0 ? void 0 : _b.map(async (img, index) => {
-                log(img);
                 await worksDB.push(`/${id}/typesettings[]`, {
                     id: fields.typesettingIDs[index],
                     path: img.filepath.split('/images')[1]
                 });
-            })) || [await worksDB.push(`/${id}/typesettings`, [])])
+            })) || [])
         ]);
         res.send('编辑成功');
     }
@@ -176,3 +290,21 @@ router.post('/worksInfo/submit', async (req, res) => {
         res.status(500).send('500 Internal Server Error');
     }
 });
+//辅助更改作品信息
+async function deletePreviousWorks(previousPath) {
+    return new Promise((resolve, reject) => {
+        fs.unlink(projectRootDirectory + "/data/images" + previousPath, (err) => {
+            log(err);
+            if (err) {
+                //reject的reason会作为错误信息传递给后续通过catch捕捉
+                reject(err);
+                return;
+            }
+            else {
+                //resolve,reject不会阻挡后续代码的执行，所以有时要加return
+                resolve();
+                return;
+            }
+        });
+    });
+}
