@@ -155,7 +155,7 @@ router.post('/worksInfo/submit', async (req, res) => {
           videos: [],
           typesettings: []
         }
-      })
+      }, false)
     }
     //删除已经不在作品集中的作品的数据和其图片的本地存储——视频作品
     if (fields.preVideoIDs) {
@@ -291,6 +291,13 @@ router.post('/worksInfo/submit', async (req, res) => {
         }) || []
       )
     ])
+    const async3 = worksDB.getData(`/${id}/videos`)
+    const async4 = worksDB.getData(`/${id}/typesettings`)
+    const videos: Array<any> = await async3
+    const typesettings: Array<any>=await async4
+    if (videos.length === 0 && typesettings.length === 0) {
+      await worksDB.delete(`/${id}`)
+    }
     res.send('编辑成功')
   } catch (err) {
     log(err)
@@ -315,3 +322,22 @@ async function deletePreviousWorks(previousPath: string): Promise<void> {
     });
   })
 }
+
+//更新权限信息
+router.get('/permission', async (req, res) => {
+  let decoded
+  let id
+  try {
+    decoded = jwt.verify(req.headers.token as string, privateKey)
+    id = (decoded as JwtPayload).id
+  } catch {
+    res.status(401).send('token校验失败')
+    return
+  }
+  try {
+    const usersDB = new JsonDB(new Config("./data/json/users.json", true, true, '/'))
+    res.send(await usersDB.getData(`/${id}/permission`))
+  } catch {
+    res.status(500).send('500 Internal Server Error')
+  }
+})

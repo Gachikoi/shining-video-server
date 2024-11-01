@@ -1,16 +1,9 @@
-{    
+{
     "N8aMKTtSamrUKvwWsFspw": {
         "name": "ガチ恋",
         "email": "1131997238@qq.com",
         "password": "111111",
         "avatarPath": "/avatars/99235fea9daacbbe6971b7204.jpg",
         "permission": true
-    },
-    "ONCfwIoigHdVoYOqTHlY6": {
-        "name": "test",
-        "email": "k1ss.sakura@outlook.com",
-        "password": "111111",
-        "avatarPath": "/avatars/eb51ea33b84cf0b43d748eb00.jpg",
-        "permission": false
     }
 }
