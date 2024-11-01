@@ -1,1 +1,36 @@
-{}
+{
+    "N8aMKTtSamrUKvwWsFspw": {
+        "name": "ガチ恋",
+        "avatarPath": "/avatars/99235fea9daacbbe6971b7204.jpg",
+        "videos": [
+            {
+                "id": "LBLcLxdz6-vfPTvHTUCbC",
+                "title": "【魔法少女小圆/MAD】不爱我，就去死吧（重制版）",
+                "path": "/works/xkevYTFNGFivvTJVjQ0ON.jpeg",
+                "link": "https://www.bilibili.com/video/BV1Mm41197dR"
+            }
+        ],
+        "typesettings": [
+            {
+                "id": "eHFYh1LAK4_pltOB3H0Ox",
+                "path": "/works/nyGeFV4VLD5ntbJ7_AlBV.png"
+            },
+            {
+                "id": "nbzningLG65rM0a7DcOIG",
+                "path": "/works/Pd-a_F49kjPsuvOIq5Opi.png"
+            },
+            {
+                "id": "y4gvKSBufwYIavYXc8wNu",
+                "path": "/works/Z2AreiwvOC6ew8h3aYNkR.png"
+            },
+            {
+                "id": "mU5HAJ70qfsNYPD3_fGKy",
+                "path": "/works/pVrTChZsAAhxAWWNWoAxe.png"
+            },
+            {
+                "id": "BepEXWzBRpYzEeY8JEsId",
+                "path": "/works/6fWpaY1DFIfHbu4JmbPnm.png"
+            }
+        ]
+    }
+}
