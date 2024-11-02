@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "start": "nodemon app.js",
-    "server": "node app.js"
+    "server": "NODE_ENV=production node app.js"
   },
   "nodemonConfig": {
     "ignore": [
